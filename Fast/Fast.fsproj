@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Error\Error.fs" />
+    <Compile Include="Error\ErrorParser.fs" />
+    <Compile Include="Error\ErrorLexer.fs" />
+    <Compile Include="Src\Ast.fs" />
+    <Compile Include="Src\Table.fs" />
+    <Compile Include="Src\Type.fs" />
+    <Compile Include="Src\Lexing.fs" />
+    <Compile Include="Src\Parsing.fs" />
+    <Compile Include="Src\TypeCheck.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="D:\Users\KAM\source\repos\LPI\LPI\LPI.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Tests\Parsing\" />
+  </ItemGroup>
+
+</Project>
