@@ -20,7 +20,7 @@ let (<!) (t1: #IPos) (t2: #IPos) = (t1.GetPos.Offset >>> 1) < (t2.GetPos.Offset 
 let (<=) (t1: #IPos) (t2: #IPos) = (t1.GetPos.Offset >>> 1) <= (t2.GetPos.Offset >>> 1)
 let (==) (t1: #IPos) (t2: #IPos) = t1.GetPos.Offset = t2.GetPos.Offset
 
-let SameLineAs (t1: #IPos) (t2: #IPos) = t1.GetPos.Line = t2.GetPos.Line
+let OnSameLineAs (t1: #IPos) (t2: #IPos) = t1.GetPos.Line = t2.GetPos.Line
 
 
 let True = Value(S64 1, StartPos)
@@ -346,11 +346,11 @@ and ParseStmt tokens =
         ParseLogic tokens
         |> Result.bind (fun (cond, tokens) -> 
             match tokens with
-            | { Type = DO } as d :: tokens when d == w || d |> SameLineAs w ->
+            | { Type = DO } as d :: tokens when d == w || d |> OnSameLineAs w ->
                 ParseStmtSeq w tokens
                 |> Result.bind (fun (meet, tokens) -> 
                     match tokens with
-                    | { Type = ELSE } as e :: tokens when e == w || e |> SameLineAs w ->
+                    | { Type = ELSE } as e :: tokens when e == w || e |> OnSameLineAs w ->
                         ParseStmtSeq w tokens
                         |> Result.map (fun (otherwise, tokens) ->
                             When(ValueSome id.Content, cond, meet, otherwise, GetPos w), tokens
@@ -361,40 +361,43 @@ and ParseStmt tokens =
             )
 
     | { Type = WHEN } as w :: tokens ->
-        let cond, tokens = ParseLogic tokens
-        match tokens with
-        | { Type = DO } as d :: tokens when d == w || d |> SameLineAs w ->
-            let meet, tokens = ParseStmtSeq w tokens
+        ParseLogic tokens
+        |> Result.bind (fun (cond, tokens) -> 
             match tokens with
-            | { Type = ELSE } as e :: tokens when e == w || e |> SameLineAs w ->
-                let otherwise, tokens = ParseStmtSeq w tokens
-                When(ValueNone, cond, meet, otherwise, GetPos w), tokens
-            | _ ->
-                When(ValueNone, cond, meet, [||], GetPos w), tokens
-            
-        | _ -> failwith ""
+            | { Type = DO } as d :: tokens when d == w || d |> OnSameLineAs w ->
+                ParseStmtSeq w tokens
+                |> Result.bind (fun (meet, tokens) -> 
+                    match tokens with
+                    | { Type = ELSE } as e :: tokens when e == w || e |> OnSameLineAs w ->
+                        ParseStmtSeq w tokens
+                        |> Result.map (fun (otherwise, tokens) -> When(ValueNone, cond, meet, otherwise, GetPos w), tokens)
+                    | _ -> Ok(When(ValueNone, cond, meet, [||], GetPos w), tokens)
+                )
+            | _ -> Err.Syntax "" cond
+        )
 
-    | { Type = ID } as exe :: { Type = LPARANT } :: tokens ->
-        let args, tokens = ParseArgs tokens
-        Execute(exe.Content, args, GetPos exe), tokens
+    | { Type = ID } as exe :: ({ Type = LPARANT } as lp) :: tokens ->
+        ParseArgs lp tokens
+        |> Result.map (fun (args, tokens) -> Execute(exe.Content, args, GetPos exe), tokens)
 
     | { Type = WHILE } as w :: ({ Type = ID} as id) :: tokens ->
-        let cond, tokens = ParseLogic tokens
-        if w <! cond then
-            match tokens with
-            | { Type = DO } as d :: tokens when w == d || d |> SameLineAs w ->
-                let body, tokens = ParseStmtSeq w tokens
-                While(ValueSome id.Content, cond, body, GetPos w), tokens
-
-            | _ -> failwith ""
-        else
-            failwith ""
+        ParseLogic tokens
+        |> Result.bind (fun (cond, tokens) -> 
+            if w <! cond then
+                match tokens with
+                | { Type = DO } as d :: tokens when w == d || d |> OnSameLineAs w ->
+                    ParseStmtSeq w tokens
+                    |> Result.map (fun (body, tokens) -> While(ValueSome id.Content, cond, body, GetPos w), tokens)
+                | _ -> Err.Syntax "" cond
+            else
+                Err.Indentation "" cond
+        )
 
     | { Type = WHILE } as w :: tokens ->
         let cond, tokens = ParseLogic tokens
         if w <! cond then
             match tokens with
-            | { Type = DO } as d :: tokens when w == d || d |> SameLineAs w ->
+            | { Type = DO } as d :: tokens when w == d || d |> OnSameLineAs w ->
                 let body, tokens = ParseStmtSeq w tokens
                 While(ValueNone, cond, body, GetPos w), tokens
 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\KAM\\source\\repos\\Fast\\Fast\\Fast.fsproj": {}
+    "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\KAM\\source\\repos\\Fast\\Fast\\Fast.fsproj": {
+    "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\KAM\\source\\repos\\Fast\\Fast\\Fast.fsproj",
+        "projectUniqueName": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
         "projectName": "Fast",
-        "projectPath": "C:\\Users\\KAM\\source\\repos\\Fast\\Fast\\Fast.fsproj",
+        "projectPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
         "packagesPath": "C:\\Users\\KAM\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\KAM\\source\\repos\\Fast\\Fast\\obj\\",
+        "outputPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\KAM\\AppData\\Roaming\\NuGet\\NuGet.Config",
