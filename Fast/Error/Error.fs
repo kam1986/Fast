@@ -29,7 +29,7 @@ with
             |> Option.defaultValue "\n"
 
         // easy to parse 
-        $"{E.Type.ToString().ToLower()} error at {E.Position}:\n\n  {E.Message}\n\n{trailing}"
+        $"{E.Type.ToString().ToLower()} error at {E.Position}:\n\n  \"{E.Message}\"\n\n{trailing}"
 
 
 // we use tags instead of DUs
@@ -50,7 +50,7 @@ module Err =
     // create a costume error type
     // used in each module of the compiler 
     // to reuse common patterns of creation
-    let inline private Ty ty msg pos =
+    let inline internal Ty ty msg pos =
         { 
             Type = ty
             Message = msg

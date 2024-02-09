@@ -6,6 +6,8 @@
 
         and give better error messages
 
+        expand information captured i.e. instead of start position safe range over expressions, statements, and declarations
+
 *)
 module Parsing
 
@@ -394,36 +396,44 @@ and ParseStmt tokens =
         )
 
     | { Type = WHILE } as w :: tokens ->
-        let cond, tokens = ParseLogic tokens
+        ParseLogic tokens
+        |> Result.bind (fun (cond, tokens) ->
         if w <! cond then
             match tokens with
             | { Type = DO } as d :: tokens when w == d || d |> OnSameLineAs w ->
-                let body, tokens = ParseStmtSeq w tokens
-                While(ValueNone, cond, body, GetPos w), tokens
-
-            | _ -> failwith ""
+                ParseStmtSeq w tokens
+                |> Result.map (fun (body, tokens) -> While(ValueNone, cond, body, GetPos w), tokens)
+            | t :: _ -> Err.Syntax $"expecte a do bout found token {t}" w
+            | _ -> Err.EOC cond
         else
-            failwith ""
+            Err.Indentation "the condition of the while loop are not indented properly" w
+        )
 
     | _ ->
-        let Loc(loc, _), tokens = ParseLoc tokens
-        match tokens with
-        | { Type = ARROW } as a :: tokens ->
-            let value, tokens = ParseExpr tokens
-            Assign(loc, value, GetPos loc), tokens
+        ParseLoc tokens
+        |> Result.bind (fun (Loc(loc, _), tokens) ->
+            match tokens with
+            | { Type = ARROW } as a :: tokens ->
+                ParseExpr tokens
+                |> Result.map (fun (value, tokens) -> Assign(loc, value, GetPos loc), tokens)
+            | t :: _ -> Err.Syntax $"expected an assignment operator '<-' but found {t}" loc
+            | _ -> Err.EOC loc
+        )
 
 
 and ParseStmtSeq token tokens =
     let rec loop stmts tokens =
-        match tokens with
-        | [] -> List.toArray stmts |> Array.rev, tokens
+        match tokens with        
         // indentation check of body
-        | t :: _ when t <= token && token.Start.Line < (GetPos t).Line -> 
-            List.toArray stmts |> Array.rev, tokens
-        | _ -> 
-            let stmt, tokens = ParseStmt tokens
-            loop (stmt :: stmts) tokens
+        | t :: _ when token <! t && token.Start.Line < (GetPos t).Line  -> 
+            ParseStmt tokens
+            |> Result.bind (fun (stmt, tokens) -> loop (stmt :: stmts) tokens)
+    
+        | _ when stmts <> [] -> Ok(List.toArray stmts |> Array.rev, tokens)
+        | _ -> Err.Syntax "" token
+
     loop [] tokens
+    
 
 
 and ParseParams tokens =
@@ -438,53 +448,60 @@ and ParseParams tokens =
         | { Type = ID } as param :: { Type = COMMA } :: tokens ->
             loop (param.Content :: params) tokens
     loop [] tokens
+    |> Ok
 
-
-and ParseDec tokens =
+and ParseDec at tokens =
     match tokens with
     | { Type = LET } as v :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
-        let body, tokens = ParseLogic tokens
-        Variable(id.Content, Imm, body, GetPos v), tokens
+        ParseLogic tokens
+        |> Result.map (fun (body, tokens) -> Variable(id.Content, Imm, body, GetPos v), tokens)
 
     | { Type = MUT } as v :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
-        let body, tokens = ParseLogic tokens
-        Variable(id.Content, Mut, body, GetPos v), tokens
+        ParseLogic tokens
+        |> Result.map (fun (body, tokens) -> Variable(id.Content, Mut, body, GetPos v), tokens)
 
-    | { Type = FUN } as f :: ({ Type = ID } as id) :: tokens ->
-        let params, tokens = ParseParams tokens
-        match tokens with
-        | { Type = EQ } as e :: tokens ->
-            let body, tokens = ParseStmtSeq f tokens
-            Function(id.Content, params, body, GetPos f), tokens
-
-    | _ -> failwith "" 
-     
+    | { Type = FUN } as f :: ({ Type = ID } as id) :: { Type = LPARANT } :: tokens ->
+        ParseParams tokens
+        |> Result.bind (fun (params, tokens) ->
+            match tokens with
+            | { Type = EQ } as e :: tokens ->
+                ParseStmtSeq f tokens
+                |> Result.map (fun (body, tokens) -> Function(id.Content, params, body, GetPos f), tokens)
+            | _ -> Err.Syntax "" f 
+        )
+    | t :: _ -> Err.Syntax $"expecting a declaration token but found {t}" t 
+    | _ -> Err.EOC at
 
 
 and ParseModule tokens =
-    let rec loop decs tokens =
+    let rec loop at decs tokens =
         match tokens with
         | [] -> 
             List.toArray decs 
             |> Array.rev
+            |> Ok
         | _ -> 
-            let dec, tokens = ParseDec tokens
-            loop (dec :: decs) tokens
+            ParseDec at tokens
+            |> Result.bind (fun (dec, tokens) -> loop at (dec :: decs) tokens)
 
     match tokens with
     | { Type = MODULE } :: ({ Type = ID } as id) :: tokens ->
-        let decs = loop [] tokens
-        {   
-            Name = id.Content
-            Declarations = decs
-            Exe = ValueNone
-        }
+        loop id.End [] tokens
+        |> Result.map (fun decs -> 
+            {   
+                Name = id.Content
+                Declarations = decs
+                Exe = ValueNone
+            }
+        )
 
     | _ -> 
-        let decs = loop [] tokens
-        {   
-            Name = ""
-            Declarations = decs
-            Exe = ValueNone
-        }
+        loop StartPos [] tokens
+        |> Result.map (fun decs ->
+            {   
+                Name = ""
+                Declarations = decs
+                Exe = ValueNone
+            }
+        )
 

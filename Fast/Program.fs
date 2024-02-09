@@ -10,13 +10,19 @@ printfn "it is also ment as an intermediate to other languages"
 printfn "the point of Fast is to make memory management and pointer handling more codeable with less bugs"
 printfn ""
 
-let text = 
-    "##\nthis is a while loop\n##\nwhile true\ndo\n  answer <- 42"
+// used to apply testing
+#if DEBUG 
+open ErrorReader
+(*
+    TODO:
+        implement for all folders in Tests do for all files in each folder do
+        run test
 
-text
-|> Lex
-|> Result.mapError (fun err -> ())
-|> Result.map ParseStmt
-|> Result.mapError (fun err -> ())
-|> Result.iter (printfn "%A")
+        because this makes testing easier.
+*)
+testing 
+|> printfn "the error parser runs fine: %A"
+#else
 
+
+#endif

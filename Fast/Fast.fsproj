@@ -7,14 +7,13 @@
 
   <ItemGroup>
     <Compile Include="Error\Error.fs" />
-    <Compile Include="Error\ErrorParser.fs" />
-    <Compile Include="Error\ErrorLexer.fs" />
+    <Compile Include="Error\ErrorReader.fs" />
     <Compile Include="Src\Ast.fs" />
     <Compile Include="Src\Table.fs" />
     <Compile Include="Src\Type.fs" />
     <Compile Include="Src\Lexing.fs" />
     <Compile Include="Src\Parsing.fs" />
-    <Compile Include="Src\TypeCheck.fs" />
+    <Compile Include="Src\Validation.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
