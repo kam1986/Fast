@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="Tests\Parsing\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="Error\Error.fs" />
     <Compile Include="Error\ErrorReader.fs" />
     <Compile Include="Src\Ast.fs" />
@@ -22,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tests\Parsing\" />
+    <Folder Include="Tests\" />
   </ItemGroup>
 
 </Project>

@@ -68,6 +68,7 @@ let ErrorParser tokens =
     loop [] tokens
 
 
+#if DEBUG
 let test = "syntax error at (1,2):\n\n  \"error message\"\n\n"
 
 let expect = Ok(Err.Ty Syntax "error message" (Pos(1,2,0))) : Result<Err,string>
@@ -78,3 +79,4 @@ let testing =
     |> ErrorParser
     |> (=) expect
     
+#endif

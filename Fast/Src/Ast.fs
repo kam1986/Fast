@@ -21,6 +21,67 @@ type Operand<'s8, 's16, 's32, 's64, 'u8, 'u16, 'u32, 'u64,'f32, 'f64, 'f128> =
 
 type Operator<'s,'u,'f> = Operand<'s, 's, 's, 's, 'u, 'u, 'u, 'u,'f, 'f, 'f>
 
+
+type TyCon =
+    | Arrow
+    | Type of Operator<unit,unit,unit>
+    | TyFun of int[] * Type
+
+and Type =
+    | App  of TyCon * Type[]
+    | TyVar  of int
+    | FVar of int
+    | IVar of int
+    | NVar of int
+    | Meta of int * Type voption ref
+    | Int of int * Type voption ref
+    | Num of int * Type voption ref
+    | Floating of int * Type voption ref
+    | Poly of int[] * Type
+
+// this will lead to minimizing of memory usage
+// since reference to the same value/memorypoint
+let u8    = App(Type(U8()),  [||])
+let u16   = App(Type(U16()), [||])
+let u32   = App(Type(U32()), [||])
+let u64   = App(Type(U64()), [||])
+let s8    = App(Type(S8()),  [||])
+let s16   = App(Type(S16()), [||])
+let s32   = App(Type(S32()), [||])
+let s64   = App(Type(S64()), [||])
+let f32   = App(Type(F32()), [||])
+let f64   = App(Type(F64()), [||])
+let f128  = App(Type(F128()),[||])
+
+
+let signed = 
+    [|
+        u8 
+        u16
+        u32
+        u64
+        s8 
+        s16
+        s32
+        s64
+    |]
+
+let unsigned = 
+    [|
+        u8 
+        u16
+        u32
+        u64
+    |]
+
+let floating = 
+    [|
+        f32
+        f64
+        f128
+    |]
+
+
 // for now this is the only thing we need
 // we will expand it to polymorphic types and use total type inference later on
 
@@ -128,7 +189,7 @@ with
 
 
 type Declaration =
-    | Function of string * string[] * Stmt[] * Pos
+    | Function of string * (string * Type voption)[] * Stmt[] * Pos
     | Variable of string * Mut * Expr * Pos
 with
     interface IPos with
