@@ -6,7 +6,11 @@ open Regex
 
 type Tag =
     | ID
+    | TYID
     | INT
+    | NUMBER
+    | INTEGER
+    | FLOATING
     | FLOAT
     | PLUS
     | MINUS
@@ -149,6 +153,9 @@ let private lexer =
         !"false", FALSE
         !"mut", MUT
         !"fun", FUN
+        !"float", FLOATING
+        !"int", INTEGER
+        !"num", NUMBER
         !"break", BREAK
         !"continue", CONTINUE
         !"return", RETURN
@@ -162,6 +169,7 @@ let private lexer =
         snum, INT
         floating, FLOAT
         id, ID
+        !"'" => id, TYID
         whitespace, WS
         singleline, SINGLELINECOMMENT
         multiline, MULTILINECOMMENT

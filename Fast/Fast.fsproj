@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Include="Error\Error.fs" />
     <Compile Include="Error\ErrorReader.fs" />
+    <Compile Include="Testing.fs" />
     <Compile Include="Src\Ast.fs" />
     <Compile Include="Src\Table.fs" />
     <Compile Include="Src\Type.fs" />

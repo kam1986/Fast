@@ -13,6 +13,10 @@ printfn ""
 // used to apply testing
 #if DEBUG 
 open ErrorReader
+open Ast
+open Type
+open Table
+
 (*
     TODO:
         implement for all folders in Tests do for all files in each folder do
@@ -22,6 +26,18 @@ open ErrorReader
 *)
 testing 
 |> printfn "the error parser runs fine: %A"
+
+let test = "fun add(x, y)\n  return x + y"
+
+
+test
+|> Lex
+|> Result.bind ParseModule
+|> Result.mapError (printfn "%A")
+|> Result.iter (printfn "%A")
+
+
+
 #else
 
 

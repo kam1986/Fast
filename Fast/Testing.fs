@@ -10,7 +10,7 @@ open System.IO
 let StartTest code =
     let codeInfo = FileInfo code
     let folderinfo = 
-        DirectoryInfo $"./Tests/{codeInfo.Name[..codeInfo.Name - 1 - codeInfo.Extension.Length]}"
+        DirectoryInfo $"./Tests/{codeInfo.Name[..codeInfo.Name.Length - 1 - codeInfo.Extension.Length]}"
     
     let tests =    
         Directory.CreateDirectory($"{folderinfo.FullName}/Tests")

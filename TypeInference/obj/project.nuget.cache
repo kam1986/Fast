@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "9vSM++Is4XuyMKgHwfrPaH+BO4dXtX60e3AVzAJv5xyRgx/Ayh8mec0bYKcWPMrVk1RKGmQ8HWyo4EEkI/ebtQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\TypeInference\\TypeInference.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\KAM\\.nuget\\packages\\fsharp.core\\7.0.401\\fsharp.core.7.0.401.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -6,7 +6,7 @@
 
         and give better error messages
 
-        expand information captured i.e. instead of start position safe range over expressions, statements, and declarations
+        expand information captured i.e. instead of start infoition safe range over expressions, statements, and declarations
 
 *)
 module Parsing
@@ -18,6 +18,7 @@ open Position
 open Ast
 
 
+
 let (<!) (t1: #IPos) (t2: #IPos) = (t1.GetPos.Offset >>> 1) < (t2.GetPos.Offset >>> 1)
 let (<=) (t1: #IPos) (t2: #IPos) = (t1.GetPos.Offset >>> 1) <= (t2.GetPos.Offset >>> 1)
 let (==) (t1: #IPos) (t2: #IPos) = t1.GetPos.Offset = t2.GetPos.Offset
@@ -25,8 +26,19 @@ let (==) (t1: #IPos) (t2: #IPos) = t1.GetPos.Offset = t2.GetPos.Offset
 let OnSameLineAs (t1: #IPos) (t2: #IPos) = t1.GetPos.Line = t2.GetPos.Line
 
 
-let True = Value(S64 1, StartPos)
-let False = Value(S64 0, StartPos)
+
+
+let True = Value(S64 1, Info.Bool)
+let False = Value(S64 0, Info.Bool)
+
+let Info (token: Token<_>) = 
+    {
+        Ty = ValueNone
+        Start = token.Start
+        End = token.End
+    }
+
+
 
 let unop =
     [|
@@ -81,31 +93,43 @@ let Logic = [|LAND; OR; IMPLY|]
 
 let (++) a1 a2 = Array.append a1 a2
 
-let pred0 = [|Add; Sub|]
-let pred1 = [|Mul; Div|]
-let pred3 = [|Rem|]
-let pred4 = [|RotLeft; RotRight; ShiftLeft; ShiftRight|]
-let pred5 = [|And; Or; Xor|]
+
+let tyop = 
+    [|
+        Tag.S8
+        Tag.S16
+        Tag.S32
+        Tag.S64
+        Tag.U8
+        Tag.U16
+        Tag.U32
+        Tag.U64
+        Tag.F32
+        Tag.F64
+        Tag.F128
+    |]
+
+
 
 let assleft = [||]
 let assright = [||]
 
 
-let ToUnary token expr pos =
+let ToUnary token expr info =
     match token.Type with
-    | MINUS -> Ok(Unary(Neg, expr, pos))
-    | BC    -> Ok(Unary(BitCount, expr, pos))
-    | LZ    -> Ok(Unary(LeadingZeros, expr, pos))
-    | TZ    -> Ok(Unary(TrailingZeros, expr, pos))
-    | CEIL  -> Ok(Unary(Ceil, expr, pos))
-    | FLOOR -> Ok(Unary(Floor, expr, pos))
-    | ROUND -> Ok(Unary(Round, expr, pos))
-    | SQRT  -> Ok(Unary(Sqrt, expr, pos))
-    | t     -> Err.Syntax $"expected a unary operator, but found the token {t}" pos
+    | MINUS -> Ok(Unary(Neg, expr, info))
+    | BC    -> Ok(Unary(BitCount, expr, info))
+    | LZ    -> Ok(Unary(LeadingZeros, expr, info))
+    | TZ    -> Ok(Unary(TrailingZeros, expr, info))
+    | CEIL  -> Ok(Unary(Ceil, expr, info))
+    | FLOOR -> Ok(Unary(Floor, expr, info))
+    | ROUND -> Ok(Unary(Round, expr, info))
+    | SQRT  -> Ok(Unary(Sqrt, expr, info))
+    | t     -> Err.Syntax $"expected a unary operator, but found the token {t}" info
         
 
 
-let ToBinOp token pos =
+let ToBinOp token info =
     match token.Type with
     | PLUS   -> Ok Add
     | MINUS  -> Ok Sub
@@ -119,10 +143,10 @@ let ToBinOp token pos =
     | RS     -> Ok ShiftRight
     | LR     -> Ok RotLeft
     | RR     -> Ok RotRight
-    | t -> Err.Syntax $"expected a binary operator, but found the token {t}" pos
+    | t -> Err.Syntax $"expected a binary operator, but found the token {t}" info
 
     
-let ToRelOp token pos =
+let ToRelOp token info =
     match token.Type with
     | NE -> Ok Ne 
     | EQ -> Ok Eq
@@ -130,10 +154,10 @@ let ToRelOp token pos =
     | LT -> Ok Lt 
     | GE -> Ok Ge 
     | GT -> Ok Gt 
-    | t -> Err.Syntax $"expected a relational operator, but found the token {t}" pos
+    | t -> Err.Syntax $"expected a relational operator, but found the token {t}" info
 
 
-let ToCvtop token pos =
+let ToCvtop token info =
    match token.Type with
    | Tag.S8   -> Ok Operator.S8   
    | Tag.S16  -> Ok Operator.S16  
@@ -146,22 +170,22 @@ let ToCvtop token pos =
    | Tag.F32  -> Ok Operator.F32  
    | Tag.F64  -> Ok Operator.F64  
    | Tag.F128 -> Ok Operator.F128 
-   | t -> Err.Syntax $"expected a convertion operator, but found the token {t}" pos
+   | t -> Err.Syntax $"expected a convertion operator, but found the token {t}" info
 
 
 let inline Is set token = Array.contains token.Type set
 
 let rec ParseValue tokens =
     match tokens with
-    | { Type = TRUE } as token :: tokens     -> Ok(Value(S64 (int64 1), GetPos token), tokens)
-    | { Type = FALSE } as token :: tokens    -> Ok(Value(S64 (int64 0), GetPos token), tokens)
-    | ({ Type = INT } as token) :: tokens    -> Ok(Value (S64 (int64 token.Content), token.Start), tokens)
-    | ({ Type = FLOAT } as token) :: tokens  -> Ok(Value (F128 (decimal token.Content), token.Start), tokens)
+    | { Type = TRUE } as token :: tokens     -> Ok(Value(S64 (int64 1), Info token), tokens)
+    | { Type = FALSE } as token :: tokens    -> Ok(Value(S64 (int64 0), Info token), tokens)
+    | ({ Type = INT } as token) :: tokens    -> Ok(Value (S64 (int64 token.Content), Info token), tokens)
+    | ({ Type = FLOAT } as token) :: tokens  -> Ok(Value (F128 (decimal token.Content), Info token), tokens)
     | ({ Type = ID } as token) :: ({ Type = LPARANT }) :: tokens  ->
         ParseArgs token tokens        
-        |> Result.map (fun (args, tokens) -> Call(token.Content, args, GetPos token), tokens)
+        |> Result.map (fun (args, tokens) -> Call(token.Content, args, Info token), tokens)
         
-    |  ({ Type = ID } as token) :: tokens  -> Ok(Loc(Var(token.Content, token.Start), token.Start), tokens)
+    |  ({ Type = ID } as token) :: tokens  -> Ok(Loc(Var(token.Content, Info token), Info token), tokens)
 
     | ({ Type = LPARANT } as lp) :: tokens ->
         ParseLogic tokens
@@ -169,9 +193,9 @@ let rec ParseValue tokens =
             if lp <= expr then
                 match tokens with
                 | ({ Type = RPARANT } as rp) :: tokens when lp <= rp -> Ok(expr, tokens)
-                | ({ Type = RPARANT } as rp) :: _ -> Err.Indentation $"closing ')' was not indented properly" (GetPos rp)
-                | _ -> Err.Syntax $"expected a ')', but found the token" (GetPos lp)
-            else Err.Indentation $"the nested expression was not properly indented in respect to the opening '('" (GetPos expr)
+                | ({ Type = RPARANT } as rp) :: _ -> Err.Indentation $"closing ')' was not indented properly" (Info rp)
+                | _ -> Err.Syntax $"expected a ')', but found the token" (Info lp)
+            else Err.Indentation $"the nested expression was not properly indented in respect to the opening '('" (GetInfo expr)
         )
     | t :: _ -> Err.Syntax $"expected a value or a nested expression, but found {t}" (GetPos t)
     | _ -> Err.Syntax $"expected a value or a nested expression, but reach end of input" StartPos 
@@ -179,11 +203,11 @@ let rec ParseValue tokens =
 
 and ParseLoc tokens =
     match tokens with
-    | ({ Type = ID } as token) :: tokens -> Ok(Loc(Var(token.Content, GetPos token), GetPos token), tokens)
+    | ({ Type = ID } as token) :: tokens -> Ok(Loc(Var(token.Content, Info token), Info token), tokens)
     | ({ Type = DEREF } as token) :: tokens ->
         tokens
         |> ParseValue
-        |> Result.map (fun (adr, tokens) -> Loc(Adr(adr,  GetPos adr), GetPos token), tokens)
+        |> Result.map (fun (adr, tokens) -> Loc(Adr(adr,  GetInfo adr), Info token), tokens)
 
     | _ -> ParseValue tokens 
         
@@ -193,23 +217,10 @@ and ParseExpr tokens =
     | token :: tokens when token |> Is unop ->
         ParseExpr tokens
         |> Result.bind (fun (expr, tokens) ->
-            ToUnary token expr token.Start
+            ToUnary token expr (Info token)
             |> Result.map (fun expr -> expr, tokens)
         )
 
-
-    | token :: tokens when token |> Is cvtop ->
-        
-        ParseValue tokens
-        |> Result.bind (fun (value, tokens) -> 
-            if token <= value then
-                ToCvtop token (GetPos token)
-                |> Result.map(fun op -> Convert(op value, GetPos token), tokens)
-            else
-                Err.Indentation 
-                    $"the argument to the convertion operator are not indented correctly" 
-                    (GetPos token)
-        )
 
     | { Type = IF } as i :: tokens ->
         ParseLogic tokens
@@ -223,7 +234,7 @@ and ParseExpr tokens =
                         ParseExpr tokens
                         |> Result.bind (fun (otherwize, tokens) ->
                             if i <! otherwize then 
-                                Ok(If(cond, meet, otherwize, GetPos i), tokens)
+                                Ok(If(cond, meet, otherwize, Info i), tokens)
                             else 
                                 Err.Indentation "" otherwize
                         )
@@ -234,6 +245,18 @@ and ParseExpr tokens =
             | { Type = THEN } as t :: _ -> Err.Indentation "" t 
             | _ -> Err.EOC i
             )
+
+    | token :: tokens when token |> Is cvtop ->        
+        ParseValue tokens
+        |> Result.bind (fun (value, tokens) -> 
+            if token <= value then
+                ToCvtop token (GetPos token)
+                |> Result.map(fun op -> Convert(op value, Info token), tokens)
+            else
+                Err.Indentation 
+                    $"the argument to the convertion operator are not indented correctly" 
+                    (GetPos token)
+        )
 
     | _ -> 
         ParseValue tokens
@@ -246,9 +269,9 @@ and ParseExpr tokens =
                     ParseExpr tokens
                     |> Result.map (fun (right, tokens) ->
                         match right with
-                        | Binary (op'', left', right', pos) when op'' < op' && left <= right ->
-                            Binary(op', Binary(op', left, left', op.Start), right', pos), tokens
-                        | _ -> Binary(op', left, right, GetPos op), tokens
+                        | Binary (op'', left', right', info) when op'' < op' && left <= right ->
+                            Binary(op', Binary(op', left, left', Info op), right', info), tokens
+                        | _ -> Binary(op', left, right, Info op), tokens
                     )
                 )
         
@@ -256,7 +279,7 @@ and ParseExpr tokens =
                 ToRelOp op op
                 |> Result.bind (fun op' ->
                     ParseExpr tokens
-                    |> Result.map (fun (right, tokens) ->  Compare(op', left, right, GetPos op), tokens)
+                    |> Result.map (fun (right, tokens) ->  Compare(op', left, right, Info op), tokens)
                     )
             
             | _ -> Ok(left, tokens)
@@ -301,7 +324,7 @@ and ParseLogic tokens =
     match tokens with
     | { Type = NOT } as token :: tokens ->
         ParseExpr tokens
-        |> Result.map (fun (e, tokens) -> Unary(IsZero, e, GetPos token), tokens)
+        |> Result.map (fun (e, tokens) -> Unary(IsZero, e, Info token), tokens)
 
     | _ ->
         ParseExpr tokens
@@ -309,15 +332,15 @@ and ParseLogic tokens =
             match tokens with
             | { Type = LAND } as logop :: tokens ->
                 ParseExpr tokens
-                |> Result.map (fun (right, tokens) -> If(left, right, False, GetPos logop), tokens)
+                |> Result.map (fun (right, tokens) -> If(left, right, False, Info logop), tokens)
             
             | { Type = LOR } as logop :: tokens ->
                 ParseExpr tokens
-                |> Result.map (fun (right, tokens) -> If(left, True, right, GetPos logop), tokens)
+                |> Result.map (fun (right, tokens) -> If(left, True, right, Info logop), tokens)
 
             | { Type = IMPLY } as logop :: tokens ->
                 ParseExpr tokens
-                |> Result.map (fun (right, tokens) -> If(left, right, True, GetPos logop), tokens)
+                |> Result.map (fun (right, tokens) -> If(left, right, True, Info logop), tokens)
 
             | _ -> Ok(left, tokens)
         )
@@ -326,23 +349,23 @@ and ParseLogic tokens =
 and ParseStmt tokens =
     match tokens with
     | { Type = CONTINUE } as t :: ({ Type = ID } as label) :: tokens when t <! label ->
-        Ok(Continue(ValueSome label.Content, GetPos t), tokens)
+        Ok(Continue(ValueSome label.Content, Info t), tokens)
     | { Type = BREAK } as t :: ({ Type = ID } as label) :: tokens when t <! label ->
-        Ok(Break(ValueSome label.Content, GetPos t), tokens)
+        Ok(Break(ValueSome label.Content, Info t), tokens)
     
-    | { Type = CONTINUE } as t :: tokens -> Ok(Continue(ValueNone, GetPos t), tokens)
-    | { Type = BREAK } as t :: tokens -> Ok(Break(ValueNone, GetPos t), tokens)
+    | { Type = CONTINUE } as t :: tokens -> Ok(Continue(ValueNone, Info t), tokens)
+    | { Type = BREAK } as t :: tokens -> Ok(Break(ValueNone, Info t), tokens)
     | { Type = MUT } as mut :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
         ParseLogic tokens
-        |> Result.map (fun (body, tokens) -> Declare(id.Content, Mut, body, GetPos mut), tokens)
+        |> Result.map (fun (body, tokens) -> Declare(id.Content, Mut, body, Info mut), tokens)
 
     | { Type = LET } as mut :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
         ParseLogic tokens
-        |> Result.map (fun (body, tokens) -> Declare(id.Content, Imm, body, GetPos mut), tokens)
+        |> Result.map (fun (body, tokens) -> Declare(id.Content, Imm, body, Info mut), tokens)
 
     | { Type = RETURN } as ret :: tokens ->
         ParseLogic tokens        
-        |> Result.map (fun (e, tokens) -> Return(e, GetPos ret), tokens)
+        |> Result.map (fun (e, tokens) -> Return(e, Info ret), tokens)
 
     | { Type = WHEN } as w :: ({ Type = ID } as id) :: tokens when w <! id ->
         ParseLogic tokens
@@ -355,9 +378,9 @@ and ParseStmt tokens =
                     | { Type = ELSE } as e :: tokens when e == w || e |> OnSameLineAs w ->
                         ParseStmtSeq w tokens
                         |> Result.map (fun (otherwise, tokens) ->
-                            When(ValueSome id.Content, cond, meet, otherwise, GetPos w), tokens
+                            When(ValueSome id.Content, cond, meet, otherwise, Info w), tokens
                         )
-                    | _ -> Ok(When(ValueSome id.Content, cond, meet, [||], GetPos w), tokens)
+                    | _ -> Ok(When(ValueSome id.Content, cond, meet, ValueNone, Info w), tokens)
                 )
             | _ -> Err.Syntax "" cond
             )
@@ -372,15 +395,15 @@ and ParseStmt tokens =
                     match tokens with
                     | { Type = ELSE } as e :: tokens when e == w || e |> OnSameLineAs w ->
                         ParseStmtSeq w tokens
-                        |> Result.map (fun (otherwise, tokens) -> When(ValueNone, cond, meet, otherwise, GetPos w), tokens)
-                    | _ -> Ok(When(ValueNone, cond, meet, [||], GetPos w), tokens)
+                        |> Result.map (fun (otherwise, tokens) -> When(ValueNone, cond, meet, otherwise, Info w), tokens)
+                    | _ -> Ok(When(ValueNone, cond, meet, ValueNone, Info w), tokens)
                 )
             | _ -> Err.Syntax "" cond
         )
 
     | { Type = ID } as exe :: ({ Type = LPARANT } as lp) :: tokens ->
         ParseArgs lp tokens
-        |> Result.map (fun (args, tokens) -> Execute(exe.Content, args, GetPos exe), tokens)
+        |> Result.map (fun (args, tokens) -> Execute(exe.Content, args, Info exe), tokens)
 
     | { Type = WHILE } as w :: ({ Type = ID} as id) :: tokens ->
         ParseLogic tokens
@@ -389,7 +412,7 @@ and ParseStmt tokens =
                 match tokens with
                 | { Type = DO } as d :: tokens when w == d || d |> OnSameLineAs w ->
                     ParseStmtSeq w tokens
-                    |> Result.map (fun (body, tokens) -> While(ValueSome id.Content, cond, body, GetPos w), tokens)
+                    |> Result.map (fun (body, tokens) -> While(ValueSome id.Content, cond, body, Info w), tokens)
                 | _ -> Err.Syntax "" cond
             else
                 Err.Indentation "" cond
@@ -402,7 +425,7 @@ and ParseStmt tokens =
             match tokens with
             | { Type = DO } as d :: tokens when w == d || d |> OnSameLineAs w ->
                 ParseStmtSeq w tokens
-                |> Result.map (fun (body, tokens) -> While(ValueNone, cond, body, GetPos w), tokens)
+                |> Result.map (fun (body, tokens) -> While(ValueNone, cond, body, Info w), tokens)
             | t :: _ -> Err.Syntax $"expecte a do bout found token {t}" w
             | _ -> Err.EOC cond
         else
@@ -415,38 +438,53 @@ and ParseStmt tokens =
             match tokens with
             | { Type = ARROW } as a :: tokens ->
                 ParseExpr tokens
-                |> Result.map (fun (value, tokens) -> Assign(loc, value, GetPos loc), tokens)
+                |> Result.map (fun (value, tokens) -> Assign(loc, value, GetInfo loc), tokens)
             | t :: _ -> Err.Syntax $"expected an assignment operator '<-' but found {t}" loc
             | _ -> Err.EOC loc
         )
 
 
 and ParseStmtSeq token tokens =
-    let rec loop stmts tokens =
+    let rec loop stmt tokens =
         match tokens with        
         // indentation check of body
         | t :: _ when token <! t && token.Start.Line < (GetPos t).Line  -> 
             ParseStmt tokens
-            |> Result.bind (fun (stmt, tokens) -> loop (stmt :: stmts) tokens)
+            |> Result.bind (fun (stmt', tokens) -> 
+                let stmt = 
+                    ValueOption.map (fun stmt -> Sequence(stmt, stmt', GetInfo stmt)) stmt
+                    |> ValueOption.orElse (ValueSome stmt')
+                    
+                loop stmt tokens                )
     
-        | _ when stmts <> [] -> Ok(List.toArray stmts |> Array.rev, tokens)
-        | _ -> Err.Syntax "" token
+        | _ -> Ok(stmt, tokens)
 
-    loop [] tokens
+    loop ValueNone tokens
     
 
-
+// we could simple insert type variables instead of a valueoption type 
+// but we choose to address this later
 and ParseParams tokens =
     let rec loop params tokens =
         match tokens with
         | { Type = RPARANT } :: tokens -> 
             List.toArray params |> Array.rev, tokens
 
-        | { Type = ID } as param :: { Type = RPARANT} :: tokens ->
+        | { Type = ID } as param :: ty :: { Type = RPARANT } :: tokens 
+            when ty |> Is tyop ->
+            let tyop =
+                ToCvtop ty ty
+                |> Result.map (fun t -> App(Type (t()), [||]))
+                |> Result.defaultWith (fun _ -> failwith "should never happen param typing 1")
+
             List.toArray (param.Content :: params) |> Array.rev, tokens
 
+        | { Type = ID } as param :: { Type = RPARANT} :: tokens ->
+            List.toArray (param.Content :: params) |> Array.rev, tokens
+    
         | { Type = ID } as param :: { Type = COMMA } :: tokens ->
             loop (param.Content :: params) tokens
+
     loop [] tokens
     |> Ok
 
@@ -454,20 +492,22 @@ and ParseDec at tokens =
     match tokens with
     | { Type = LET } as v :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
         ParseLogic tokens
-        |> Result.map (fun (body, tokens) -> Variable(id.Content, Imm, body, GetPos v), tokens)
+        |> Result.map (fun (body, tokens) -> Variable(id.Content, Imm, body, Info v), tokens)
 
     | { Type = MUT } as v :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
         ParseLogic tokens
-        |> Result.map (fun (body, tokens) -> Variable(id.Content, Mut, body, GetPos v), tokens)
+        |> Result.map (fun (body, tokens) -> Variable(id.Content, Mut, body, Info v), tokens)
 
     | { Type = FUN } as f :: ({ Type = ID } as id) :: { Type = LPARANT } :: tokens ->
         ParseParams tokens
         |> Result.bind (fun (params, tokens) ->
-            match tokens with
-            | { Type = EQ } as e :: tokens ->
-                ParseStmtSeq f tokens
-                |> Result.map (fun (body, tokens) -> Function(id.Content, params, body, GetPos f), tokens)
-            | _ -> Err.Syntax "" f 
+            let t, tokens =
+                match tokens with
+                | _ -> TyVar(tyvar()), tokens
+
+            ParseStmtSeq f tokens
+            |> Result.map (fun (body, tokens) -> Function(id.Content, params, body, Info f), tokens)
+            
         )
     | t :: _ -> Err.Syntax $"expecting a declaration token but found {t}" t 
     | _ -> Err.EOC at

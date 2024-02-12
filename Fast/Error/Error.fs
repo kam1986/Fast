@@ -42,6 +42,7 @@ and [<Struct>] ErrorType =
     | Syntax
     | Indentation
     | Type
+    | LookUp
     | EOC
 
 
@@ -74,9 +75,16 @@ module Err =
         Ty Type msg pos
         |> Error
 
+    let inline LookUp msg pos =
+        Ty LookUp msg pos
+        |> Error
+
     let inline EOC pos =
         Ty EOC "unexpectedly reach end of context" pos
         |> Error
+
+    let inline CorrectPos err pos = { err with Position = pos }
+
 
     // Add an error as trailing error
     // to an existing error.
