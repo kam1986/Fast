@@ -10,7 +10,7 @@ open System.Reflection
 [<assembly: System.Reflection.AssemblyCompanyAttribute("LPI")>]
 [<assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")>]
 [<assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")>]
-[<assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")>]
+[<assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e695fbdd68543d8f393ea7aa1110c39e69ce25b1")>]
 [<assembly: System.Reflection.AssemblyProductAttribute("LPI")>]
 [<assembly: System.Reflection.AssemblyTitleAttribute("LPI")>]
 [<assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")>]

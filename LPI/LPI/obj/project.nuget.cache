@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "5995ePLfz/9RmGDlhW0Rw5poLuohYUxEcD7zSrVQGDxVgXl0gbSYbEg8g6kRy81NNldYh+FDYllAZReJ/yI0uQ==",
+  "dgSpecHash": "hF9gUv/ioG/hhQGbK0lU8WyMYvo8TEQSejBF1fJZTASsM/rycgvCEi5x81UZ5O/H4hjdGw2/P4jWQVQYpafHPg==",
   "success": true,
-  "projectFilePath": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj",
+  "projectFilePath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\LPI\\LPI\\LPI.fsproj",
   "expectedPackageFiles": [
-    "C:\\Users\\KAM\\.nuget\\packages\\fsharp.core\\7.0.401\\fsharp.core.7.0.401.nupkg.sha512"
+    "C:\\Users\\kam\\.nuget\\packages\\fsharp.core\\8.0.101\\fsharp.core.8.0.101.nupkg.sha512",
+    "C:\\Users\\kam\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.26\\microsoft.windowsdesktop.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\kam\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.26\\microsoft.netcore.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\kam\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.26\\microsoft.aspnetcore.app.ref.6.0.26.nupkg.sha512"
   ],
   "logs": []
 }

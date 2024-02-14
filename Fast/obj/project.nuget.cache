@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Hpgsoo+0SCJjIkxpeYKccWRELMz3stbNjc3D2NFDQMMLuFGHBAQ35hXECPtyXW00PkC+YCdYs52K7Tq0odI+vA==",
+  "dgSpecHash": "dpugW7QLWCKAIx4MeWTfU3btIL4DknTJsWNaaJZbCabAZu3C/iz/qZNRPkNsctjMdBvWmOGqCaLoNEOyvV78Cw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
+  "projectFilePath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj",
   "expectedPackageFiles": [
-    "C:\\Users\\KAM\\.nuget\\packages\\fsharp.core\\7.0.401\\fsharp.core.7.0.401.nupkg.sha512"
+    "C:\\Users\\kam\\.nuget\\packages\\fsharp.core\\8.0.101\\fsharp.core.8.0.101.nupkg.sha512"
   ],
   "logs": []
 }

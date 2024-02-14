@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj": {}
+    "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj": {
+    "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
+        "projectUniqueName": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj",
         "projectName": "Fast",
-        "projectPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
-        "packagesPath": "C:\\Users\\KAM\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\obj\\",
+        "projectPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj",
+        "packagesPath": "C:\\Users\\kam\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\KAM\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\kam\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.403\\FSharp\\library-packs": {},
+          "C:\\Program Files\\dotnet\\sdk\\8.0.101\\FSharp\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -43,7 +43,7 @@
             "FSharp.Core": {
               "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
               "target": "Package",
-              "version": "[7.0.401, )",
+              "version": "[8.0.101, )",
               "generatePathProperty": true
             }
           },
@@ -63,7 +63,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },

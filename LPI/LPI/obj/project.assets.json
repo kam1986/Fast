@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net6.0": {
-      "FSharp.Core/7.0.401": {
+      "FSharp.Core/8.0.101": {
         "type": "package",
         "compile": {
           "lib/netstandard2.1/FSharp.Core.dll": {
@@ -59,15 +59,15 @@
     }
   },
   "libraries": {
-    "FSharp.Core/7.0.401": {
-      "sha512": "ZL16YHLJnkosMooVXjvJH0vGf7O4RSNtCpA/qw6OAHYxPCYSZRc5pKFTpDeDLdSWpOJDaZlveKcn42F0UDo77A==",
+    "FSharp.Core/8.0.101": {
+      "sha512": "sOLz3O4BOxnTKfd5OChdRmDUy4Id0GfoEClRG4nzIod8LY1LJZcNyygKAV0A78XOLh8yvhA5hsDYKZXGCR9blw==",
       "type": "package",
-      "path": "fsharp.core/7.0.401",
+      "path": "fsharp.core/8.0.101",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
-        "fsharp.core.7.0.401.nupkg.sha512",
+        "fsharp.core.8.0.101.nupkg.sha512",
         "fsharp.core.nuspec",
         "lib/netstandard2.0/FSharp.Core.dll",
         "lib/netstandard2.0/FSharp.Core.xml",
@@ -104,23 +104,23 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "FSharp.Core >= 7.0.401"
+      "FSharp.Core >= 8.0.101"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\KAM\\.nuget\\packages\\": {}
+    "C:\\Users\\kam\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj",
+      "projectUniqueName": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\LPI\\LPI\\LPI.fsproj",
       "projectName": "LPI",
-      "projectPath": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj",
-      "packagesPath": "C:\\Users\\KAM\\.nuget\\packages\\",
-      "outputPath": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\obj\\",
+      "projectPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\LPI\\LPI\\LPI.fsproj",
+      "packagesPath": "C:\\Users\\kam\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\LPI\\LPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\KAM\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\kam\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -128,7 +128,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\sdk\\7.0.403\\FSharp\\library-packs": {},
+        "C:\\Program Files\\dotnet\\sdk\\8.0.101\\FSharp\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -145,7 +145,7 @@
           "FSharp.Core": {
             "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[7.0.401, )",
+            "version": "[8.0.101, )",
             "generatePathProperty": true
           }
         },
@@ -160,12 +160,26 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[6.0.26, 6.0.26]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[6.0.26, 6.0.26]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[6.0.26, 6.0.26]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }
