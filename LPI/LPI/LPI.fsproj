@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src\Position.fs" />
+    <Compile Include="src\Token.fs" />
+    <Compile Include="src\Regex.fs" />
+    <Compile Include="src\DFA.fs" />
+    <Compile Include="src\Lexer.fs" />
+    <Compile Include="Library.fs" />
+  </ItemGroup>
+
+</Project>

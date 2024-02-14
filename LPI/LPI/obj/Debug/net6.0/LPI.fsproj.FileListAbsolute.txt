@@ -1,0 +1,11 @@
+D:\Users\KAM\source\repos\LPI\LPI\bin\Debug\net6.0\LPI.deps.json
+D:\Users\KAM\source\repos\LPI\LPI\bin\Debug\net6.0\LPI.dll
+D:\Users\KAM\source\repos\LPI\LPI\bin\Debug\net6.0\LPI.pdb
+D:\Users\KAM\source\repos\LPI\LPI\bin\Debug\net6.0\LPI.xml
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.fsproj.AssemblyReference.cache
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.AssemblyInfoInputs.cache
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.AssemblyInfo.fs
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.fsproj.CoreCompileInputs.cache
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.dll
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.xml
+D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.pdb

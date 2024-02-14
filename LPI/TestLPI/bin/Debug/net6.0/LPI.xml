@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>LPI</name></assembly>
+<members>
+<member name="M:Token.Token.Content``1(Token.Token{``0})">
+<summary>
+ getting a string
+</summary>
+</member>
+<member name="P:DFA.DFATable.Item(System.Byte,System.Byte)">
+<summary>
+ given a state and a symbol return either the next state number or -1
+ since the table indexing only takes bytes it can only do lookup in the range of (0,255*256-1)
+ hence there are no way of get out of bound
+</summary>
+</member>
+<member name="T:Lexer.Lexer`1">
+<summary>
+ this a lexer type based on deterministic finite automata
+ it pattern match at byte size which makes it able to parse all classes of character classes
+ it takes an array of regex patterns and a token type tag (either a enum or DU) and an optional
+ array of tokens the user wish to filter out like whitespace
+ the lexer can be used as argument in concurrent programming
+ since the &quot;state&quot; are wrapped inside the functions and not the lexer itself.
+ it do no code generation hence can be modified and created at runtime
+ the precedence of expression goes from front to back, hence a pattern appearing before another
+ will overrule on return for a token matching the samme pattern
+
+ the whole lexer instance should not exceed 74752 bytes + array for token type tags
+</summary>
+</member>
+<member name="M:Lexer.NextToken``1(Lexer.Lexer{``0},Position.Pos,System.Collections.Generic.IEnumerable{System.Byte})">
+<summary>
+ strictly find next token, erroring if no token are match in front of the current codepoint
+</summary>
+</member>
+</members>
+</doc>
