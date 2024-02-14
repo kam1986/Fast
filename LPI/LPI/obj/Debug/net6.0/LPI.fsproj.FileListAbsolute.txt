@@ -9,3 +9,15 @@ D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.fsproj.CoreCompileInputs.
 D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.dll
 D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.xml
 D:\Users\KAM\source\repos\LPI\LPI\obj\Debug\net6.0\LPI.pdb
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\bin\Debug\net6.0\LPI.deps.json
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\bin\Debug\net6.0\LPI.dll
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\bin\Debug\net6.0\LPI.pdb
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\bin\Debug\net6.0\LPI.xml
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.fsproj.AssemblyReference.cache
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.AssemblyInfoInputs.cache
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.AssemblyInfo.fs
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.fsproj.CoreCompileInputs.cache
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.sourcelink.json
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.dll
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.xml
+C:\Users\kam\Desktop\Kode\Fast\LPI\LPI\obj\Debug\net6.0\LPI.pdb

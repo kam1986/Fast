@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LPI\LPI\LPI.fsproj" />
     <ProjectReference Include="D:\Users\KAM\source\repos\LPI\LPI\LPI.fsproj" />
   </ItemGroup>
 

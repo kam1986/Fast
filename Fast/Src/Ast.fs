@@ -236,7 +236,7 @@ and Stmt =
     | When of string voption * Expr * Stmt * Stmt voption * Info
     | Break of string voption * Info    // optional targets, no target are implicit the inner most loop
     | Continue of string voption * Info // optional targets, no target are implicit the inner most loop
-    | While of string voption * Expr * Stmt voption * Info
+    | While of string voption * Expr * Stmt * Info
     | Execute of string * Expr[] * Info // execute procedure
     | Return of Expr * Info
     // used instead of an array since it makes type validation easier.
@@ -272,7 +272,7 @@ with
 let GetInfo (a: #IInfo) = a.GetInfo
 
 type Declaration =
-    | Function of string * string[] * Stmt voption * Info
+    | Function of string * string[] * Stmt * Info
     | Variable of string * Mut * Expr * Info
 with
     interface IPos with

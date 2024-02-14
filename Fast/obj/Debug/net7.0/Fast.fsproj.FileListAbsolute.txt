@@ -62,3 +62,11 @@ C:\Users\KAM\OneDrive\Skrivebord\Fast\Fast\obj\Debug\net7.0\refint\Fast.dll
 C:\Users\KAM\OneDrive\Skrivebord\Fast\Fast\obj\Debug\net7.0\Fast.pdb
 C:\Users\KAM\OneDrive\Skrivebord\Fast\Fast\obj\Debug\net7.0\Fast.genruntimeconfig.cache
 C:\Users\KAM\OneDrive\Skrivebord\Fast\Fast\obj\Debug\net7.0\ref\Fast.dll
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.fsproj.AssemblyReference.cache
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.AssemblyInfoInputs.cache
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.AssemblyInfo.fs
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.fsproj.CoreCompileInputs.cache
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.sourcelink.json
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.dll
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\refint\Fast.dll
+C:\Users\kam\Desktop\Kode\Fast\Fast\obj\Debug\net7.0\Fast.pdb

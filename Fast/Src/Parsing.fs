@@ -17,7 +17,16 @@ open Lexing
 open Position
 open Ast
 
+type Result<'ok,'err> with
+    static member orElse e ret =
+        match ret with
+        | Error _ -> e
+        | _ -> ret
 
+    static member orElseWith e ret =
+        match ret with
+        | Error _ -> e()
+        | _ -> ret
 
 let (<!) (t1: #IPos) (t2: #IPos) = (t1.GetPos.Offset >>> 1) < (t2.GetPos.Offset >>> 1)
 let (<=) (t1: #IPos) (t2: #IPos) = (t1.GetPos.Offset >>> 1) <= (t2.GetPos.Offset >>> 1)
@@ -377,8 +386,8 @@ and ParseStmt tokens =
                     match tokens with
                     | { Type = ELSE } as e :: tokens when e == w || e |> OnSameLineAs w ->
                         ParseStmtSeq w tokens
-                        |> Result.map (fun (otherwise, tokens) ->
-                            When(ValueSome id.Content, cond, meet, otherwise, Info w), tokens
+                        |> Result.orElse (Ok(When(ValueNone, cond, meet, ValueNone, Info w), tokens))
+                        |> Result.map (fun (otherwise, tokens) -> When(ValueSome id.Content, cond, meet, ValueSome otherwise, Info w), tokens
                         )
                     | _ -> Ok(When(ValueSome id.Content, cond, meet, ValueNone, Info w), tokens)
                 )
@@ -395,7 +404,8 @@ and ParseStmt tokens =
                     match tokens with
                     | { Type = ELSE } as e :: tokens when e == w || e |> OnSameLineAs w ->
                         ParseStmtSeq w tokens
-                        |> Result.map (fun (otherwise, tokens) -> When(ValueNone, cond, meet, otherwise, Info w), tokens)
+                        |> Result.orElse (Ok(When(ValueNone, cond, meet, ValueNone, Info w), tokens))
+                        |> Result.map (fun (otherwise, tokens) -> When(ValueNone, cond, meet, ValueSome otherwise, Info w), tokens)
                     | _ -> Ok(When(ValueNone, cond, meet, ValueNone, Info w), tokens)
                 )
             | _ -> Err.Syntax "" cond
@@ -460,6 +470,11 @@ and ParseStmtSeq token tokens =
         | _ -> Ok(stmt, tokens)
 
     loop ValueNone tokens
+    |> Result.bind (fun (stmtopt, tokens) ->
+        stmtopt
+        |> ValueOption.map (fun stmt -> Ok(stmt, tokens))
+        |> ValueOption.defaultValue (Err.Syntax "statement sequence was not found" token)
+    )
     
 
 // we could simple insert type variables instead of a valueoption type 
