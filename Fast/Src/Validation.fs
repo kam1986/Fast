@@ -411,10 +411,9 @@ let rec ValidateStmt labels vtab ftab stmt =
 
         Map Typeof first
         |> Map (Unify unit) 
-        |> (fun t -> next, t)
-        ||> Bind2 (fun (next, vtab, ftab) _ -> 
-            first
-            |> Map (fun (first, _,_) -> Sequence(first, next, AddType info (TypeOf next)), vtab, ftab)
+        |> (fun t -> next, t) // need to check for type error
+        ||> Bind2 (fun (next, _, _) _ -> 
+            Map (fun (first, _, _) -> Sequence(first, next, AddType info (TypeOf next)), vtab, ftab) first
         )
 
 
