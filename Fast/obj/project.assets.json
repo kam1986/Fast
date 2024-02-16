@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "FSharp.Core/8.0.101": {
+      "FSharp.Core/7.0.401": {
         "type": "package",
         "compile": {
           "lib/netstandard2.1/FSharp.Core.dll": {
@@ -60,7 +60,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "FSharp.Core": "8.0.101"
+          "FSharp.Core": "7.0.401"
         },
         "compile": {
           "bin/placeholder/LPI.dll": {}
@@ -72,15 +72,15 @@
     }
   },
   "libraries": {
-    "FSharp.Core/8.0.101": {
-      "sha512": "sOLz3O4BOxnTKfd5OChdRmDUy4Id0GfoEClRG4nzIod8LY1LJZcNyygKAV0A78XOLh8yvhA5hsDYKZXGCR9blw==",
+    "FSharp.Core/7.0.401": {
+      "sha512": "ZL16YHLJnkosMooVXjvJH0vGf7O4RSNtCpA/qw6OAHYxPCYSZRc5pKFTpDeDLdSWpOJDaZlveKcn42F0UDo77A==",
       "type": "package",
-      "path": "fsharp.core/8.0.101",
+      "path": "fsharp.core/7.0.401",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
-        "fsharp.core.8.0.101.nupkg.sha512",
+        "fsharp.core.7.0.401.nupkg.sha512",
         "fsharp.core.nuspec",
         "lib/netstandard2.0/FSharp.Core.dll",
         "lib/netstandard2.0/FSharp.Core.xml",
@@ -116,30 +116,31 @@
     },
     "LPI/1.0.0": {
       "type": "project",
-      "path": "../LPI/LPI/LPI.fsproj",
-      "msbuildProject": "../LPI/LPI/LPI.fsproj"
+      "path": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj",
+      "msbuildProject": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj"
     }
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "FSharp.Core >= 8.0.101",
+      "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\LPI\\LPI\\LPI.fsproj",
+      "FSharp.Core >= 7.0.401",
       "LPI >= 1.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kam\\.nuget\\packages\\": {}
+    "C:\\Users\\KAM\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj",
+      "projectUniqueName": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
       "projectName": "Fast",
-      "projectPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\Fast.fsproj",
-      "packagesPath": "C:\\Users\\kam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\Fast\\obj\\",
+      "projectPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\Fast.fsproj",
+      "packagesPath": "C:\\Users\\KAM\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\Fast\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\kam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\KAM\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -147,15 +148,15 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\sdk\\8.0.101\\FSharp\\library-packs": {},
+        "C:\\Program Files\\dotnet\\sdk\\7.0.403\\FSharp\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\kam\\Desktop\\Kode\\Fast\\LPI\\LPI\\LPI.fsproj": {
-              "projectPath": "C:\\Users\\kam\\Desktop\\Kode\\Fast\\LPI\\LPI\\LPI.fsproj"
+            "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\LPI\\LPI\\LPI.fsproj": {
+              "projectPath": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\LPI\\LPI\\LPI.fsproj"
             },
             "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj": {
               "projectPath": "D:\\Users\\KAM\\source\\repos\\LPI\\LPI\\LPI.fsproj"
@@ -171,7 +172,7 @@
           "FSharp.Core": {
             "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[8.0.101, )",
+            "version": "[7.0.401, )",
             "generatePathProperty": true
           }
         },
@@ -191,8 +192,19 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1105",
+      "level": "Error",
+      "message": "Unable to find project information for 'C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\LPI\\LPI\\LPI.fsproj'. If you are using Visual Studio, this may be because the project is unloaded or not part of the current solution so run a restore from the command-line. Otherwise, the project file may be invalid or missing targets required for restore.",
+      "libraryId": "C:\\Users\\KAM\\OneDrive\\Skrivebord\\Fast\\LPI\\LPI\\LPI.fsproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }

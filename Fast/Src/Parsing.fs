@@ -503,6 +503,8 @@ and ParseParams tokens =
     loop [] tokens
     |> Ok
 
+
+
 and ParseDec at tokens =
     match tokens with
     | { Type = LET } as v :: ({ Type = ID } as id) :: { Type = EQ } :: tokens ->
@@ -516,16 +518,12 @@ and ParseDec at tokens =
     | { Type = FUN } as f :: ({ Type = ID } as id) :: { Type = LPARANT } :: tokens ->
         ParseParams tokens
         |> Result.bind (fun (params, tokens) ->
-            let t, tokens =
-                match tokens with
-                | _ -> TyVar(tyvar()), tokens
-
             ParseStmtSeq f tokens
-            |> Result.map (fun (body, tokens) -> Function(id.Content, params, body, Info f), tokens)
-            
+            |> Result.map (fun (body, tokens) -> Function(id.Content, params, body, Info f), tokens)            
         )
     | t :: _ -> Err.Syntax $"expecting a declaration token but found {t}" t 
     | _ -> Err.EOC at
+
 
 
 and ParseModule tokens =

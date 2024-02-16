@@ -244,6 +244,7 @@ let inline AddLabel label labels =
     |> ValueOption.defaultValue labels
 
 let rec ValidateStmt labels vtab ftab stmt =
+    let inline Typeof (stmt, _,_) = TypeOf stmt
     match stmt with
     | Break (target, info) -> Ok(Break(target, AddType info unit), vtab, ftab)
     | Continue (target, info) -> Ok(Continue(target, AddType info unit), vtab, ftab)
@@ -254,14 +255,79 @@ let rec ValidateStmt labels vtab ftab stmt =
             Declare(name, mut, body, AddType info t), Table.Bind name (t,mut) vtab, ftab
         )
 
+    | Return(ret, info) ->
+        ValidateExpr vtab ftab ret
+        |> Result.map (fun ret -> Return(ret, AddType info (TypeOf ret)), vtab, ftab)
+
+    | Assign(loc, value, info) ->
+        let loc = ValidateLocation vtab ftab loc
+        let value = ValidateExpr vtab ftab value
+
+        (loc, value)
+        ||> Bind2 (fun loc value ->
+            // check type between the location and the value
+            (TypeOf loc, TypeOf value)
+            ||> Unify 
+            |> Bind (fun _ -> 
+                match loc with
+                | Var(name, _) ->
+                    Lookup name vtab
+                    |> Bind (fun (_, mut) ->
+                        if mut = Mut then
+                            Ok(Assign(loc, value, AddType info unit), vtab, ftab)
+                        else
+                            // immutability are considered a type error
+                            Err.Type $"the value {name} is immutable and cannot be updated" loc
+                    )
+                | _ ->
+                    // address assignment are always mutable
+                    Ok(Assign(loc, value, AddType info unit), vtab, ftab)
+            )
+        )
+
+    | While(label, cond, body, info) ->
+        let cond = ValidateExpr vtab ftab cond
+        let body = ValidateStmt (AddLabel label labels) vtab ftab body
+        (cond, body)
+        ||> Bind2 (fun cond (body, _, _) -> 
+            TypeOf cond
+            |> Unify bool
+            |> Map (fun _ -> 
+                // it is legal to return in a while loop
+                let t = TypeOf body
+                While(label, cond, body, AddType info t), vtab, ftab
+            )
+        )
+
+    // a call to the function can be allowed to return non unit
+    // values without being nested inside a return statement
+    // testing for unit type requirements are done in statement sequence validation
+    | Execute(name, args, info) ->         
+        Array.map (ValidateExpr vtab ftab) args 
+        |> Array.fold (Map2 (fun args arg -> arg :: args)) (Ok[])
+        |> Bind (fun args -> 
+            Lookup name ftab
+            |> Bind (fun t -> 
+                let args = List.toArray args |> Array.rev
+                let f = Instantiate t
+                let ret = Meta()
+                let f' = func (Array.map TypeOf args) ret
+                Unify f f'
+                |> Map (fun _ -> 
+                    AddInstance name (Generalize empty f')
+                    Execute(name, args, AddType info ret), vtab, ftab)
+            )
+        )
+
     | When(label, cond, meet, otherwise, info) ->
+        let labels = AddLabel label labels
         let cond = ValidateExpr vtab ftab cond
         let meet = 
-            ValidateStmt (AddLabel label labels) vtab ftab meet
+            ValidateStmt labels vtab ftab meet
             |> Map (fun (meet, _, _) -> meet)
 
         let otherwise = 
-            ValueOption.map (ValidateStmt (AddLabel label labels) vtab ftab) otherwise
+            ValueOption.map (ValidateStmt labels vtab ftab) otherwise
             |> Swap
             |> Map (fun otherwise ->
                 match otherwise with
@@ -269,11 +335,14 @@ let rec ValidateStmt labels vtab ftab stmt =
                 | ValueSome(otherwise, vtab, ftab) -> ValueSome otherwise, vtab, ftab
             )
             
-        let o = Map (fun (o, _, _) -> ValueOption.map TypeOf o |> ValueOption.defaultValue unit) otherwise
+        let o = 
+            otherwise
+            |> Map (fun (o, _, _) -> 
+                ValueOption.map TypeOf o 
+                |> ValueOption.defaultValue unit) 
 
         (Map TypeOf meet, o)
         ||> Bind2 Unify
-        |> Bind (Unify unit)
         |> Bind (fun t -> 
             (meet, otherwise)
             ||> Bind2 (fun meet (otherwise, vtab, ftab) -> 
@@ -285,6 +354,68 @@ let rec ValidateStmt labels vtab ftab stmt =
             )    
         )
 
+    // we can have sequences of statements which in branches end with a return statment.
+    // this and the next case checks for that
+    | Sequence(When(label, cond, meet, ValueNone, winfo), next, sinfo) ->
+        let labels' = AddLabel label labels
+        let cond = ValidateExpr vtab ftab cond
+        let meet = ValidateStmt labels' vtab ftab meet       
+        let next = ValidateStmt labels vtab ftab next
+
+        (Map Typeof meet, Map Typeof next)
+        ||> Bind2 Unify 
+        |> Bind (fun t ->
+            cond
+            |> Bind (fun cond ->
+                Unify bool (TypeOf cond) 
+                |> Bind (fun _ ->
+                   (next, meet)
+                   ||> Map2 (fun (meet, _,_) (next,_,_) ->
+                        Sequence(
+                            // the type can possible be unit, this is just a generalized
+                            // version for an if condition with a possible return statement
+                            // and an empty else statement sequence
+                            // followed by some statement sequence
+                            // it checks that the branch are the same type
+                            // as the following sequence
+                            When(label, cond, meet, ValueNone, AddType winfo t), 
+                            next, 
+                            AddType sinfo t
+                        ), vtab, ftab
+                   )
+                )
+            )
+        )
+
+    // first is a none branching statement by invarians of parsing
+    // hence, it must be of type unit, but the following statement sequence
+    // can differ from unit, this allows for a sequence of unit typed statements
+    // to be followed by a non unit typed statement.
+    // this is needed becuase of sequences like
+    //
+    // when cond1 then
+    //     ...
+    //     return ..
+    // when cond2 then
+    //     ...
+    //     return ..
+    // ...
+    // 
+    // the case above covers the 'when' case
+    | Sequence(first, next, info) ->
+        let first = ValidateStmt labels vtab ftab first
+        // need to take into account that first can have a declaration of a variable
+        let next = 
+            first
+            |> Bind (fun (_, vtab, ftab) -> ValidateStmt labels vtab ftab next)
+
+        Map Typeof first
+        |> Map (Unify unit) 
+        |> (fun t -> next, t)
+        ||> Bind2 (fun (next, vtab, ftab) _ -> 
+            first
+            |> Map (fun (first, _,_) -> Sequence(first, next, AddType info (TypeOf next)), vtab, ftab)
+        )
 
 
 

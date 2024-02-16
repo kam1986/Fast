@@ -240,7 +240,7 @@ and Stmt =
     | Execute of string * Expr[] * Info // execute procedure
     | Return of Expr * Info
     // used instead of an array since it makes type validation easier.
-    | Sequence of Stmt * Stmt * Info 
+    | Sequence of Stmt * Stmt * Info // makes type validation much simpler than a stmt[] as a body of blocks
 with
     interface IPos with
         member S.GetPos =
