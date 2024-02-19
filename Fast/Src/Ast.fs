@@ -262,7 +262,7 @@ with
                 | Assign(_,_,pos)
                 | When(_,_,_,_,pos)
                 | Break(_,pos)
-                | Continue(_, pos)
+                | Continue(_,pos)
                 | While(_,_,_,pos)
                 | Execute(_,_,pos)
                 | Sequence(_,_,pos)

@@ -193,7 +193,7 @@ let rec ValidateExpr vtab ftab expr =
                 let f' = func (Array.map TypeOf args) ret
                 Unify f f'
                 |> Map (fun _ -> 
-                    AddInstance name (Generalize empty f')
+                    AddInstance name (Generalize { values = [] } f')
                     Call(name, args, AddType info ret))
             )
         )
@@ -252,7 +252,7 @@ let rec ValidateStmt labels vtab ftab stmt =
         ValidateExpr vtab ftab body
         |> Map (fun body -> 
             let t = TypeOf body
-            Declare(name, mut, body, AddType info t), Table.Bind name (t,mut) vtab, ftab
+            Declare(name, mut, body, AddType info t), Table.Bind name (t, mut) vtab, ftab
         )
 
     | Return(ret, info) ->
@@ -314,7 +314,7 @@ let rec ValidateStmt labels vtab ftab stmt =
                 let f' = func (Array.map TypeOf args) ret
                 Unify f f'
                 |> Map (fun _ -> 
-                    AddInstance name (Generalize empty f')
+                    AddInstance name (Generalize { values = [] } f')
                     Execute(name, args, AddType info ret), vtab, ftab)
             )
         )
@@ -418,8 +418,40 @@ let rec ValidateStmt labels vtab ftab stmt =
 
 
 
-and ValidataDeclarations dec = failwith ""
+and ValidataDeclarations vtab ftab dec = 
+    match dec with 
+    | Function(name, params, body, info) ->
+        let ft = 
+            (Array.map (fun _ -> Meta()) params, Meta())
+            ||> func
+
+        let ftab' = Table.Bind name ft ftab
+        ValidateStmt [] vtab ftab' body
+        |> Map (fun (body, vtab, ftab) -> 
+            let gft = Generalize vtab ft
+            Function(name, params, body, AddType info gft), vtab, Table.Bind name gft ftab
+            )
+
+    | Variable(name, mut, body, info) ->
+        ValidateExpr vtab ftab body
+        |> Map (fun body -> 
+            let t = TypeOf body
+            Variable(name, mut, body, AddType info t), Table.Bind name (t, mut) vtab, ftab
+        )
 
 
-
-and ValidateModule m = failwith ""
+and ValidateModule m = 
+    (Ok([],{ values = []}, { values = []}), m.Declarations)
+    ||> Array.fold (fun prior dec ->
+        prior
+        |> Bind (fun (decs, vtab, ftab) -> 
+            ValidataDeclarations vtab ftab dec
+            |> Map (fun (dec, vtab, ftab) -> dec :: decs, vtab, ftab)
+        )
+    )
+    |> Map (fun (decs, _, _) -> 
+        List.toArray decs
+        |> Array.rev
+        |> fun decs -> { m with Declarations = decs }
+    )
+    

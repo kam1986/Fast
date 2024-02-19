@@ -237,7 +237,8 @@ let Instantiate t =
 let Generalize vtab t =
     let vs = 
         vtab.values
-        |> List.map ItemOf 
+        |> List.map ItemOf
+        |> List.map fst
         |> List.toArray
 
 
