@@ -6,12 +6,18 @@ open Regex
 
 type Tag =
     | ID
-    | TYID
-    | INT
     | NUMBER
-    | INTEGER
-    | FLOATING
-    | FLOAT
+    | UINT8
+    | UINT16
+    | UINT32
+    | UINT64
+    | SINT8
+    | SINT16
+    | SINT32
+    | SINT64
+    | FLOAT32
+    | FLOAT64
+    | FLOAT128
     | PLUS
     | MINUS
     | SLASH
@@ -153,9 +159,6 @@ let private lexer =
         !"false", FALSE
         !"mut", MUT
         !"fun", FUN
-        !"float", FLOATING
-        !"int", INTEGER
-        !"num", NUMBER
         !"break", BREAK
         !"continue", CONTINUE
         !"return", RETURN
@@ -166,10 +169,21 @@ let private lexer =
         !"while", WHILE
         !"then", THEN
         !"do", DO
-        snum, INT
-        floating, FLOAT
+        num => !"uy", UINT8
+        num => !"us", UINT16
+        num => !"u", UINT32
+        num => !"ul", UINT64
+        
+        snum => !"y", SINT8
+        snum => !"s", SINT16
+        snum, SINT32
+        snum => !"l", SINT64
+
+        floating, FLOAT64
+        floating => !"f", FLOAT32
+        floating => !"d", FLOAT128
+
         id, ID
-        !"'" => id, TYID
         whitespace, WS
         singleline, SINGLELINECOMMENT
         multiline, MULTILINECOMMENT

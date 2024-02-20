@@ -27,12 +27,13 @@ open Table
 testing 
 |> printfn "the error parser runs fine: %A"
 
-let test = "fun add(x, y)\n  return x + y"
+let test = "fun add_two(x)\n  return x + 2"
 
 
 test
 |> Lex
 |> Result.bind ParseModule
+|> Result.bind (Validation.ValidateModule)
 |> Result.mapError (printfn "%A")
 |> Result.iter (printfn "%A")
 

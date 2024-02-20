@@ -36,9 +36,11 @@ let OnSameLineAs (t1: #IPos) (t2: #IPos) = t1.GetPos.Line = t2.GetPos.Line
 
 
 
+let Bool v info = Value(S32 v, info)
+let True =  Bool 1 Info.Bool
+let False = Bool 0 Info.Bool
 
-let True = Value(S64 1, Info.Bool)
-let False = Value(S64 0, Info.Bool)
+
 
 let Info (token: Token<_>) = 
     {
@@ -186,17 +188,28 @@ let inline Is set token = Array.contains token.Type set
 
 let rec ParseValue tokens =
     match tokens with
-    | { Type = TRUE } as token :: tokens     -> Ok(Value(S64 (int64 1), Info token), tokens)
-    | { Type = FALSE } as token :: tokens    -> Ok(Value(S64 (int64 0), Info token), tokens)
-    | ({ Type = INT } as token) :: tokens    -> Ok(Value (S64 (int64 token.Content), Info token), tokens)
-    | ({ Type = FLOAT } as token) :: tokens  -> Ok(Value (F128 (decimal token.Content), Info token), tokens)
+    | { Type = TRUE } as token   :: tokens   -> Ok(Bool 1 (Info token), tokens)
+    | { Type = FALSE } as token  :: tokens   -> Ok(Bool 0 (Info token), tokens)
+    | { Type = SINT64 } as token :: tokens   -> Ok(Value (S64 (int64 token.Content), Info token), tokens)
+    | { Type = SINT32 } as token :: tokens   -> Ok(Value (S32 (int token.Content), Info token), tokens)
+    | { Type = SINT16 } as token :: tokens   -> Ok(Value (S16 (int16 token.Content), Info token), tokens)
+    | { Type = SINT8 } as token  :: tokens   -> Ok(Value (S8 (int8 token.Content), Info token), tokens)
+    | { Type = UINT64 } as token :: tokens   -> Ok(Value (U64 (uint64 token.Content), Info token), tokens)
+    | { Type = UINT32 } as token :: tokens   -> Ok(Value (U32 (uint token.Content), Info token), tokens)
+    | { Type = UINT16 } as token :: tokens   -> Ok(Value (U16 (uint16 token.Content), Info token), tokens)
+    | { Type = UINT8 } as token  :: tokens   -> Ok(Value (U8  (uint8 token.Content), Info token), tokens)
+   
+    | { Type = FLOAT32 } as token :: tokens   -> Ok(Value (F32 (float32 token.Content), Info token), tokens)
+    | { Type = FLOAT64 } as token :: tokens   -> Ok(Value (F64 (float token.Content), Info token), tokens)
+    | { Type = FLOAT128 } as token :: tokens  -> Ok(Value (F128 (decimal token.Content), Info token), tokens)
+    
     | ({ Type = ID } as token) :: ({ Type = LPARANT }) :: tokens  ->
         ParseArgs token tokens        
         |> Result.map (fun (args, tokens) -> Call(token.Content, args, Info token), tokens)
         
-    |  ({ Type = ID } as token) :: tokens  -> Ok(Loc(Var(token.Content, Info token), Info token), tokens)
+    |  { Type = ID } as token :: tokens  -> Ok(Loc(Var(token.Content, Info token), Info token), tokens)
 
-    | ({ Type = LPARANT } as lp) :: tokens ->
+    | { Type = LPARANT } as lp :: tokens ->
         ParseLogic tokens
         |> Result.bind (fun (expr, tokens) -> 
             if lp <= expr then
@@ -212,8 +225,8 @@ let rec ParseValue tokens =
 
 and ParseLoc tokens =
     match tokens with
-    | ({ Type = ID } as token) :: tokens -> Ok(Loc(Var(token.Content, Info token), Info token), tokens)
-    | ({ Type = DEREF } as token) :: tokens ->
+    | { Type = ID } as token :: tokens -> Ok(Loc(Var(token.Content, Info token), Info token), tokens)
+    | { Type = DEREF } as token :: tokens ->
         tokens
         |> ParseValue
         |> Result.map (fun (adr, tokens) -> Loc(Adr(adr,  GetInfo adr), Info token), tokens)

@@ -425,8 +425,9 @@ and ValidataDeclarations vtab ftab dec =
             (Array.map (fun _ -> Meta()) params, Meta())
             ||> func
 
+        let vtab' = BindAll params (Array.map (fun _ -> (Meta(), Imm)) params) vtab 
         let ftab' = Table.Bind name ft ftab
-        ValidateStmt [] vtab ftab' body
+        ValidateStmt [] vtab' ftab' body
         |> Map (fun (body, vtab, ftab) -> 
             let gft = Generalize vtab ft
             Function(name, params, body, AddType info gft), vtab, Table.Bind name gft ftab
