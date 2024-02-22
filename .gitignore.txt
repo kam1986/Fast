@@ -1,1 +1,3 @@
-vs/**
+Fast/vs/**
+Fast/obj/**
+Fast/bin/**

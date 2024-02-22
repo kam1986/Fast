@@ -160,7 +160,8 @@ let rec ValidateExpr vtab ftab expr =
         ||> Bind2 (fun left right -> 
                 Unify (TypeOf left) (TypeOf right)
                 |> Bind (Unify (TypeOfBinOp op))
-                |> Map (fun t -> Binary(op, left, right, AddType info t))
+                |> Map (fun t -> 
+                    Binary(op, left, right, AddType info t))
         )
 
     | Compare(op, left, right, info) ->
@@ -228,7 +229,7 @@ and ValidateLocation (vtab: Table<string, Type * Mut>)  ftab loc =
     match loc with
     | Var (name, info) ->
         Lookup name vtab
-        |> Result.map (fun (t, _) -> Var(name, AddType info t))
+        |> Map (fun (t, _) -> Var(name, AddType info t))
     
     | Adr(idx, info) ->
         ValidateExpr vtab ftab idx
@@ -257,7 +258,7 @@ let rec ValidateStmt labels vtab ftab stmt =
 
     | Return(ret, info) ->
         ValidateExpr vtab ftab ret
-        |> Result.map (fun ret -> Return(ret, AddType info (TypeOf ret)), vtab, ftab)
+        |> Map (fun ret -> Return(ret, AddType info (TypeOf ret)), vtab, ftab)
 
     | Assign(loc, value, info) ->
         let loc = ValidateLocation vtab ftab loc
@@ -421,16 +422,21 @@ let rec ValidateStmt labels vtab ftab stmt =
 and ValidataDeclarations vtab ftab dec = 
     match dec with 
     | Function(name, params, body, info) ->
+        let paramType = Array.map (fun _ -> Meta()) params
+        let ret = Meta()
         let ft = 
-            (Array.map (fun _ -> Meta()) params, Meta())
+            (paramType, ret)
             ||> func
 
-        let vtab' = BindAll params (Array.map (fun _ -> (Meta(), Imm)) params) vtab 
+        let vtab' = BindAll params (Array.map (fun t -> (t, Imm)) paramType) vtab 
         let ftab' = Table.Bind name ft ftab
         ValidateStmt [] vtab' ftab' body
-        |> Map (fun (body, vtab, ftab) -> 
-            let gft = Generalize vtab ft
-            Function(name, params, body, AddType info gft), vtab, Table.Bind name gft ftab
+        |> Bind (fun (body, vtab, ftab) -> 
+            Unify (TypeOf body) ret
+            |> Map (fun _ ->
+                let gft = Generalize vtab ft
+                Function(name, params, body, AddType info gft), vtab, Table.Bind name gft ftab
+            )
             )
 
     | Variable(name, mut, body, info) ->
